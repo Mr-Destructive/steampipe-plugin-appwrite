@@ -1,0 +1,4 @@
+connection "appwrite" {
+  plugin = "appwrite"
+
+}
