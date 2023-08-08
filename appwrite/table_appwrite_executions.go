@@ -15,7 +15,7 @@ func tableExecutions(ctx context.Context) *plugin.Table {
 		Name:        "appwrite_executions",
 		Description: "",
 		List: &plugin.ListConfig{
-			Hydrate: accounts,
+			Hydrate: executions,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
@@ -40,7 +40,8 @@ type executionssRequestQual struct {
 }
 
 type executionsRow struct {
-	appwrite.ExecutionsListResponse
+	appwrite.ExecutionObject
+	search string
 }
 
 func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -53,7 +54,7 @@ func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
 	if settingsString != "" {
-		var crQual accountsRequestQual
+		var crQual executionssRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
 			plugin.Logger(ctx).Error("appwrite.executions", "unmarshal_error", err)
@@ -61,22 +62,20 @@ func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 		}
 	}
 
-	storage := appwrite.Storage{
+	functions := appwrite.Function{
 		Client: *conn,
 	}
 	search := d.EqualsQuals["search"].GetStringValue()
-	limit := d.EqualsQuals["limit"].GetInt64Value()
-	offset := d.EqualsQuals["offset"].GetInt64Value()
-	order := d.EqualsQuals["order"].GetStringValue()
 
-	executionsList, err := storage.ListExecutions(search, int(limit), int(offset), order)
+	executionsList, err := functions.ListExecutions(search, "", []string{})
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.executions", "api_error", err)
 		return nil, err
 	}
 	plugin.Logger(ctx).Trace("appwrite.executions", "response", executionsList)
-	for _, f := range executionsList {
-		row := executionsRow{f}
+	executions := *executionsList
+	for _, execution := range executions.Executions {
+		row := executionsRow{execution, search}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil

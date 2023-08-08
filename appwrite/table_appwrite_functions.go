@@ -15,7 +15,7 @@ func tableFunctions(ctx context.Context) *plugin.Table {
 		Name:        "appwrite_functions",
 		Description: "",
 		List: &plugin.ListConfig{
-			Hydrate: accounts,
+			Hydrate: functions,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
@@ -25,6 +25,7 @@ func tableFunctions(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
+			{Name: "runtime", Type: proto.ColumnType_STRING, Transform: transform.FromField("Runtime"), Description: "Runtime"},
 
 			// Input Columns
 			{Name: "search", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
@@ -40,7 +41,8 @@ type functionssRequestQual struct {
 }
 
 type functionsRow struct {
-	appwrite.FunctionListResponse
+	appwrite.FunctionObject
+	search string
 }
 
 func functions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -53,7 +55,7 @@ func functions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
 	if settingsString != "" {
-		var crQual accountsRequestQual
+		var crQual functionssRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
 			plugin.Logger(ctx).Error("appwrite.functions", "unmarshal_error", err)
@@ -61,22 +63,20 @@ func functions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		}
 	}
 
-	storage := appwrite.Storage{
+	functions := appwrite.Function{
 		Client: *conn,
 	}
 	search := d.EqualsQuals["search"].GetStringValue()
-	limit := d.EqualsQuals["limit"].GetInt64Value()
-	offset := d.EqualsQuals["offset"].GetInt64Value()
-	order := d.EqualsQuals["order"].GetStringValue()
 
-	functionsList, err := storage.ListFunctions(search, int(limit), int(offset), order)
+	functionsList, err := functions.ListFunctions(search, []string{})
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.functions", "api_error", err)
 		return nil, err
 	}
 	plugin.Logger(ctx).Trace("appwrite.functions", "response", functionsList)
-	for _, f := range functionsList {
-		row := functionsRow{f}
+	funcs := *functionsList
+	for _, f := range funcs.Functions {
+		row := functionsRow{f, search}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil

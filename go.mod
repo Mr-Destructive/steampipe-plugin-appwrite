@@ -3,7 +3,7 @@ module github.com/turbot/steampipe-plugin-appwrite
 go 1.19
 
 require (
-	github.com/mr-destructive/appwrite-go-sdk v0.0.0-20230721110726-e672774e6782
+	github.com/mr-destructive/appwrite-go-sdk v0.0.0-20230807112040-650fd942eb9c
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.5.0
 )
 

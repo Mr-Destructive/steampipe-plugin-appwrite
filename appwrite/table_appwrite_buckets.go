@@ -15,7 +15,7 @@ func tableBuckets(ctx context.Context) *plugin.Table {
 		Name:        "appwrite_buckets",
 		Description: "",
 		List: &plugin.ListConfig{
-			Hydrate: accounts,
+			Hydrate: buckets,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
@@ -25,7 +25,7 @@ func tableBuckets(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
-            {Name: "file_extensions", Type: proto.ColumnType_STRING, Transform: transform.FromField("AllowedFileExtensions"), Description: "file extensions"},
+			{Name: "file_extensions", Type: proto.ColumnType_STRING, Transform: transform.FromField("AllowedFileExtensions"), Description: "file extensions"},
 
 			// Input Columns
 			{Name: "search", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
@@ -41,7 +41,8 @@ type bucketsRequestQual struct {
 }
 
 type bucketsRow struct {
-	appwrite.BucketLisResponse
+	appwrite.Bucket
+	search string
 }
 
 func buckets(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -80,8 +81,9 @@ func buckets(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (i
 		return nil, err
 	}
 	plugin.Logger(ctx).Trace("appwrite.buckets", "response", bucketsList)
-	for _, b := range bucketsList {
-		row := bucketsRow{b}
+	buckers := *bucketsList
+	for _, bucket := range buckers.Buckets {
+		row := bucketsRow{bucket, search}
 		d.StreamListItem(ctx, row)
 	}
 

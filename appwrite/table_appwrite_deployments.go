@@ -15,7 +15,7 @@ func tableDeployments(ctx context.Context) *plugin.Table {
 		Name:        "appwrite_deployments",
 		Description: "",
 		List: &plugin.ListConfig{
-			Hydrate: accounts,
+			Hydrate: deployments,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
@@ -34,13 +34,13 @@ func tableDeployments(ctx context.Context) *plugin.Table {
 	}
 }
 
-type deploymentssRequestQual struct {
+type deploymentsRequestQual struct {
 	Search *string
 	Order  *string
 }
 
 type deploymentsRow struct {
-	appwrite.DeploymentListResponse
+	appwrite.DeploymentObject
 }
 
 func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -53,7 +53,7 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
 	if settingsString != "" {
-		var crQual accountsRequestQual
+		var crQual deploymentsRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
 			plugin.Logger(ctx).Error("appwrite.deployments", "unmarshal_error", err)
@@ -61,22 +61,19 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		}
 	}
 
-	storage := appwrite.Storage{
+	functions := appwrite.Function{
 		Client: *conn,
 	}
 	search := d.EqualsQuals["search"].GetStringValue()
-	limit := d.EqualsQuals["limit"].GetInt64Value()
-	offset := d.EqualsQuals["offset"].GetInt64Value()
-	order := d.EqualsQuals["order"].GetStringValue()
-
-	deploymentsList, err := storage.ListDeployments(search, int(limit), int(offset), order)
+	deploymentsList, err := functions.ListDeployments(search, "", []string{})
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.deployments", "api_error", err)
 		return nil, err
 	}
 	plugin.Logger(ctx).Trace("appwrite.deployments", "response", deploymentsList)
-	for _, f := range deploymentsList {
-		row := deploymentsRow{f}
+	deployments := *deploymentsList
+	for _, deployment := range deployments.Deployments {
+		row := deploymentsRow{deployment}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil

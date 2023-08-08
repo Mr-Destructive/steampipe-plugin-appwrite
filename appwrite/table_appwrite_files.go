@@ -15,9 +15,9 @@ func tableFiles(ctx context.Context) *plugin.Table {
 		Name:        "appwrite_files",
 		Description: "",
 		List: &plugin.ListConfig{
-			Hydrate: accounts,
+			Hydrate: files,
 			KeyColumns: []*plugin.KeyColumn{
-				{Name: "bucketId", Require: plugin.Optional},
+				{Name: "bucket_id", Require: plugin.Optional},
 				{Name: "search", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
 			},
@@ -28,7 +28,7 @@ func tableFiles(ctx context.Context) *plugin.Table {
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
 
 			// Input Columns
-			{Name: "bucketId", Type: proto.ColumnType_STRING, Transform: transform.FromField("BucketId")},
+			{Name: "bucket_id", Type: proto.ColumnType_STRING, Transform: transform.FromQual("bucket_id"), Description: "bucket id"},
 			{Name: "search", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
 			{Name: "offset", Type: proto.ColumnType_INT, Transform: transform.FromField("Offset")},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
@@ -36,13 +36,15 @@ func tableFiles(ctx context.Context) *plugin.Table {
 	}
 }
 
-type filessRequestQual struct {
-	Search *string
-	Order  *string
+type filesRequestQual struct {
+	BucketId *string `json:"bucket_id"`
+	Search   *string
+	Order    *string
 }
 
 type filesRow struct {
-	appwrite.FileListResponse
+	appwrite.File
+	BucketId string
 }
 
 func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -55,7 +57,7 @@ func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (int
 
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
 	if settingsString != "" {
-		var crQual accountsRequestQual
+		var crQual filesRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
 			plugin.Logger(ctx).Error("appwrite.files", "unmarshal_error", err)
@@ -66,7 +68,7 @@ func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (int
 	storage := appwrite.Storage{
 		Client: *conn,
 	}
-	bucketId := d.EqualsQuals["bucketId"].GetStringValue()
+	bucketId := d.EqualsQuals["bucket_id"].GetStringValue()
 	search := d.EqualsQuals["search"].GetStringValue()
 	limit := d.EqualsQuals["limit"].GetInt64Value()
 	offset := d.EqualsQuals["offset"].GetInt64Value()
@@ -78,8 +80,9 @@ func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (int
 		return nil, err
 	}
 	plugin.Logger(ctx).Trace("appwrite.files", "response", filesList)
-	for _, f := range filesList {
-		row := filesRow{f}
+	files := *filesList
+	for _, f := range files.Files {
+		row := filesRow{f, bucketId}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil

@@ -15,7 +15,7 @@ func tableDatabases(ctx context.Context) *plugin.Table {
 		Name:        "appwrite_databases",
 		Description: "",
 		List: &plugin.ListConfig{
-			Hydrate: accounts,
+			Hydrate: databases,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
@@ -40,7 +40,7 @@ type databasessRequestQual struct {
 }
 
 type databasesRow struct {
-	appwrite.DatabaseList
+	appwrite.DatabaseObject
 }
 
 func databases(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -53,7 +53,7 @@ func databases(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
 	if settingsString != "" {
-		var crQual accountsRequestQual
+		var crQual databasessRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
 			plugin.Logger(ctx).Error("appwrite.databases", "unmarshal_error", err)
@@ -61,22 +61,20 @@ func databases(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		}
 	}
 
-	storage := appwrite.Storage{
+	database := appwrite.Database{
 		Client: *conn,
 	}
 	search := d.EqualsQuals["search"].GetStringValue()
-	limit := d.EqualsQuals["limit"].GetInt64Value()
-	offset := d.EqualsQuals["offset"].GetInt64Value()
-	order := d.EqualsQuals["order"].GetStringValue()
 
-	databasesList, err := storage.ListDatabases(search, int(limit), int(offset), order)
+	databasesList, err := database.ListDatabases(search, []string{})
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.databases", "api_error", err)
 		return nil, err
 	}
 	plugin.Logger(ctx).Trace("appwrite.databases", "response", databasesList)
-	for _, f := range databasesList {
-		row := databasesRow{f}
+	databases := *databasesList
+	for _, database := range databases.Databases {
+		row := databasesRow{database}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil
