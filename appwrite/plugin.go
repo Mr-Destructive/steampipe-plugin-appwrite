@@ -20,12 +20,14 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		},
 		TableMap: map[string]*plugin.Table{
 			"appwrite_accounts":    tableAccounts(ctx),
-			"appwrite_databases":   tableDatabases(ctx),
 			"appwrite_buckets":     tableBuckets(ctx),
-			"appwrite_files":       tableFiles(ctx),
-			"appwrite_functions":   tableFunctions(ctx),
+			"appwrite_collections": tableCollections(ctx),
+			"appwrite_databases":   tableDatabases(ctx),
+			"appwrite_documents":   tableDocuments(ctx),
 			"appwrite_deployments": tableDeployments(ctx),
 			"appwrite_executions":  tableExecutions(ctx),
+			"appwrite_files":       tableFiles(ctx),
+			"appwrite_functions":   tableFunctions(ctx),
 		},
 	}
 	return p

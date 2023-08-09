@@ -498,10 +498,10 @@ github.com/modern-go/reflect2 v0.0.0-20180320133207-05fbef0ca5da/go.mod h1:bx2lN
 github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
-github.com/mr-destructive/appwrite-go-sdk v0.0.0-20230805093650-b96f7a0a7bcb h1:BI3ORVt2eLDsgPoBuwGfZDFnbQKPpP6/1vISX6j89Is=
-github.com/mr-destructive/appwrite-go-sdk v0.0.0-20230805093650-b96f7a0a7bcb/go.mod h1:zSXtuP84+0Mtb7ojqeqoQnXWMHrH/PZ7c4j5PitaOik=
 github.com/mr-destructive/appwrite-go-sdk v0.0.0-20230807112040-650fd942eb9c h1:zj61rlh2eDLUU0tukfxvNvRs9P9vk1fzuhWu6n5WiVo=
 github.com/mr-destructive/appwrite-go-sdk v0.0.0-20230807112040-650fd942eb9c/go.mod h1:zSXtuP84+0Mtb7ojqeqoQnXWMHrH/PZ7c4j5PitaOik=
+github.com/mr-destructive/appwrite-go-sdk v0.0.0-20230809063425-73d65c30bd72 h1:64TiZ8xqyNT7NwaV5ym+BLCUOJsCwODQvn+F9isx2UI=
+github.com/mr-destructive/appwrite-go-sdk v0.0.0-20230809063425-73d65c30bd72/go.mod h1:zSXtuP84+0Mtb7ojqeqoQnXWMHrH/PZ7c4j5PitaOik=
 github.com/munnerz/goautoneg v0.0.0-20120707110453-a547fc61f48d/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
