@@ -13,27 +13,26 @@ import (
 func tableDocuments(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "appwrite_documents",
-		Description: "Query documents of a collection from the appwrite database.",
+		Description: "Query documents of a collection from an appwrite database",
 		List: &plugin.ListConfig{
 			Hydrate: documents,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "database_id", Require: plugin.Optional},
 				{Name: "collection_id", Require: plugin.Optional},
-				{Name: "search", Require: plugin.Optional},
+				{Name: "search_query", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
 			},
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
-            {Name: "fields", Type: proto.ColumnType_JSON, Transform: transform.FromField("Fields"), Description: "Fields"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Id"), Description: "id"},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Name"), Description: "Name"},
+			{Name: "fields", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Fields"), Description: "Fields"},
 
 			// Input Columns
 			{Name: "database_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("DatabaseId"), Description: "DatabaseId"},
 			{Name: "collection_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("CollectionId"), Description: "CollectionId"},
-			{Name: "search", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
-			{Name: "offset", Type: proto.ColumnType_INT, Transform: transform.FromField("Offset")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}
@@ -42,12 +41,12 @@ func tableDocuments(ctx context.Context) *plugin.Table {
 type documentsRequestQual struct {
 	DatabaseId   *string `json:"database_id"`
 	CollectionId *string `json:"collection_id"`
-	Search       *string
-	Order        *string
+	Search       *string `json:"search_query"`
 }
 
 type documentRow struct {
-	appwrite.Document
+	Document appwrite.Document
+	Search   string
 }
 
 func documents(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -73,7 +72,7 @@ func documents(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	}
 	databaseId := d.EqualsQuals["database_id"].GetStringValue()
 	collectionId := d.EqualsQuals["collection_id"].GetStringValue()
-	search := d.EqualsQuals["search"].GetStringValue()
+	search := d.EqualsQuals["search_query"].GetStringValue()
 
 	documentList, err := database.ListDocuments(databaseId, collectionId, []interface{}{}, 0, 0, "", "", "", search, 0, 0)
 	if err != nil {
@@ -83,7 +82,10 @@ func documents(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	plugin.Logger(ctx).Trace("appwrite.documents", "response", documentList)
 	documents := *documentList
 	for _, document := range documents.Documents {
-		row := documentRow{document}
+		row := documentRow{
+			Document: document,
+			Search:   search,
+		}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil

@@ -13,34 +13,37 @@ import (
 func tableDeployments(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "appwrite_deployments",
-		Description: "",
+		Description: "Query deployment information of a function for an appwrite project",
 		List: &plugin.ListConfig{
 			Hydrate: deployments,
 			KeyColumns: []*plugin.KeyColumn{
-				{Name: "search", Require: plugin.Optional},
+				{Name: "search_query", Require: plugin.Optional},
+				{Name: "query", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
 			},
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.Id"), Description: "id"},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.Name"), Description: "Name"},
 
 			// Input Columns
-			{Name: "search", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
-			{Name: "offset", Type: proto.ColumnType_INT, Transform: transform.FromField("Offset")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
+			{Name: "query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Query")},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}
 }
 
 type deploymentsRequestQual struct {
-	Search *string
-	Order  *string
+	Search *string   `json:"search_query"`
+	Query  *[]string `json:"query"`
 }
 
 type deploymentsRow struct {
-	appwrite.DeploymentObject
+	Deployment appwrite.DeploymentObject
+	Search     string
+	Query      []string
 }
 
 func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -50,6 +53,19 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		plugin.Logger(ctx).Error("appwrite.deployments", "connection_error", err)
 		return nil, err
 	}
+	queryString := d.EqualsQuals["query"].GetStringValue()
+	var query []string
+	if queryString != "" {
+		err := json.Unmarshal([]byte(queryString), &query)
+		if err != nil {
+			plugin.Logger(ctx).Error("appwrite_functions.listFunctions", "connection_error", err)
+			return nil, err
+		}
+	}
+	if len(query) == 0 {
+		query = []string{}
+	}
+	search := d.EqualsQuals["search_query"].GetStringValue()
 
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
 	if settingsString != "" {
@@ -59,13 +75,18 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 			plugin.Logger(ctx).Error("appwrite.deployments", "unmarshal_error", err)
 			return nil, err
 		}
+		if crQual.Query != nil {
+			query = *crQual.Query
+		}
+		if crQual.Search != nil {
+			search = *crQual.Search
+		}
 	}
 
 	functions := appwrite.Function{
 		Client: *conn,
 	}
-	search := d.EqualsQuals["search"].GetStringValue()
-	deploymentsList, err := functions.ListDeployments(search, "", []string{})
+	deploymentsList, err := functions.ListDeployments(search, "", query)
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.deployments", "api_error", err)
 		return nil, err
@@ -73,7 +94,11 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	plugin.Logger(ctx).Trace("appwrite.deployments", "response", deploymentsList)
 	deployments := *deploymentsList
 	for _, deployment := range deployments.Deployments {
-		row := deploymentsRow{deployment}
+		row := deploymentsRow{
+			Deployment: deployment,
+			Search:     search,
+			Query:      query,
+		}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil

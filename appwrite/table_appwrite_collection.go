@@ -18,32 +18,35 @@ func tableCollections(ctx context.Context) *plugin.Table {
 			Hydrate: collections,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "database_id", Require: plugin.Optional},
-				{Name: "search", Require: plugin.Optional},
+				{Name: "search_query", Require: plugin.Optional},
+				{Name: "query", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
 			},
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Id"), Description: "id"},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Name"), Description: "Name"},
 
 			// Input Columns
 			{Name: "database_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("DatabaseId"), Description: "DatabaseId"},
-			{Name: "search", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
-			{Name: "offset", Type: proto.ColumnType_INT, Transform: transform.FromField("Offset")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
+			{Name: "query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Query")},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}
 }
 
 type collectionsRequestQual struct {
-	DatabaseId *string `json:"database_id"`
-	Search     *string
-	Order      *string
+	DatabaseId *string   `json:"database_id"`
+	Search     *string   `json:"search_query"`
+	Query      *[]string `json:"query"`
 }
 
 type collectionRow struct {
-	appwrite.Collection
+	Collection appwrite.Collection
+	Search     string
+	Query      []string
 }
 
 func collections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -54,6 +57,17 @@ func collections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		return nil, err
 	}
 
+	queryString := d.EqualsQuals["query"].GetStringValue()
+	var query []string
+	if queryString != "" {
+		err := json.Unmarshal([]byte(queryString), &query)
+		if err != nil {
+			plugin.Logger(ctx).Error("appwrite_functions.listFunctions", "connection_error", err)
+			return nil, err
+		}
+	}
+	search := d.EqualsQuals["search_query"].GetStringValue()
+
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
 	if settingsString != "" {
 		var crQual collectionsRequestQual
@@ -62,15 +76,20 @@ func collections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 			plugin.Logger(ctx).Error("appwrite.collections", "unmarshal_error", err)
 			return nil, err
 		}
+		if crQual.Query != nil {
+			query = *crQual.Query
+		}
+		if crQual.Search != nil {
+			search = *crQual.Search
+		}
 	}
 
 	database := appwrite.Database{
 		Client: *conn,
 	}
 	databaseId := d.EqualsQuals["database_id"].GetStringValue()
-	search := d.EqualsQuals["search"].GetStringValue()
 
-	collectionList, err := database.ListCollections(databaseId, search, []string{})
+	collectionList, err := database.ListCollections(databaseId, search, query)
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.collections", "api_error", err)
 		return nil, err
@@ -78,7 +97,11 @@ func collections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	plugin.Logger(ctx).Trace("appwrite.collections", "response", collectionList)
 	collections := *collectionList
 	for _, collection := range collections.Collections {
-		row := collectionRow{collection}
+		row := collectionRow{
+			Collection: collection,
+			Search:     search,
+			Query:      query,
+		}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil

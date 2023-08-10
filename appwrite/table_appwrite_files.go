@@ -13,12 +13,12 @@ import (
 func tableFiles(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "appwrite_files",
-		Description: "",
+		Description: "Query files meta information in a bucket for an appwrite project",
 		List: &plugin.ListConfig{
 			Hydrate: files,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "bucket_id", Require: plugin.Optional},
-				{Name: "search", Require: plugin.Optional},
+				{Name: "search_query", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
 			},
 		},
@@ -29,7 +29,7 @@ func tableFiles(ctx context.Context) *plugin.Table {
 
 			// Input Columns
 			{Name: "bucket_id", Type: proto.ColumnType_STRING, Transform: transform.FromQual("bucket_id"), Description: "bucket id"},
-			{Name: "search", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
 			{Name: "offset", Type: proto.ColumnType_INT, Transform: transform.FromField("Offset")},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
@@ -45,6 +45,7 @@ type filesRequestQual struct {
 type filesRow struct {
 	appwrite.File
 	BucketId string
+	Search   string
 }
 
 func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -69,12 +70,9 @@ func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (int
 		Client: *conn,
 	}
 	bucketId := d.EqualsQuals["bucket_id"].GetStringValue()
-	search := d.EqualsQuals["search"].GetStringValue()
-	limit := d.EqualsQuals["limit"].GetInt64Value()
-	offset := d.EqualsQuals["offset"].GetInt64Value()
-	order := d.EqualsQuals["order"].GetStringValue()
+	search := d.EqualsQuals["search_query"].GetStringValue()
 
-	filesList, err := storage.ListFiles(bucketId, search, int(limit), int(offset), order)
+	filesList, err := storage.ListFiles(bucketId, search, 0, 0, "")
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.files", "api_error", err)
 		return nil, err
@@ -82,7 +80,7 @@ func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (int
 	plugin.Logger(ctx).Trace("appwrite.files", "response", filesList)
 	files := *filesList
 	for _, f := range files.Files {
-		row := filesRow{f, bucketId}
+		row := filesRow{f, bucketId, search}
 		d.StreamListItem(ctx, row)
 	}
 	return nil, nil

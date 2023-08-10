@@ -13,11 +13,11 @@ import (
 func tableAccounts(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "appwrite_accounts",
-		Description: "",
+		Description: "Query users in an appwrite project",
 		List: &plugin.ListConfig{
 			Hydrate: accounts,
 			KeyColumns: []*plugin.KeyColumn{
-				{Name: "search", Require: plugin.Optional},
+				{Name: "search_query", Require: plugin.Optional},
 				{Name: "offset", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
 			},
@@ -34,7 +34,7 @@ func tableAccounts(ctx context.Context) *plugin.Table {
 			{Name: "phone_verification", Type: proto.ColumnType_BOOL, Transform: transform.FromField("PhoneVerification"), Description: "phone verification"},
 
 			// Input Columns
-			{Name: "search", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
 			{Name: "offset", Type: proto.ColumnType_INT, Transform: transform.FromField("Offset")},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
@@ -42,14 +42,15 @@ func tableAccounts(ctx context.Context) *plugin.Table {
 }
 
 type accountsRequestQual struct {
-	Search *string
+	Search *string `json:"search_query"`
+	Offset *int    `json:"offset"`
 	Limit  *int
-	Offset *int
 	Order  *string
 }
 
 type accountsRow struct {
 	appwrite.UserObject
+	Search string
 }
 
 func accounts(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -77,19 +78,16 @@ func accounts(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 	users := appwrite.Users{
 		Client: *conn,
 	}
-	search := d.EqualsQuals["search"].GetStringValue()
-	limit := d.EqualsQuals["limit"].GetInt64Value()
-	offset := d.EqualsQuals["offset"].GetInt64Value()
-	order := d.EqualsQuals["order"].GetStringValue()
+	search := d.EqualsQuals["search_query"].GetStringValue()
 
-	userList, err := users.List(search, int(limit), int(offset), order)
+	userList, err := users.List(search, 0, 0, "")
 	if err != nil {
 		plugin.Logger(ctx).Error("accounts.accounts", "api_error", err)
 		return nil, err
 	}
 	plugin.Logger(ctx).Trace("accounts.accounts", "response", userList)
 	for _, u := range userList {
-		row := accountsRow{u}
+		row := accountsRow{u, search}
 		d.StreamListItem(ctx, row)
 	}
 
