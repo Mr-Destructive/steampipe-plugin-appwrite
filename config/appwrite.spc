@@ -1,4 +1,4 @@
 connection "appwrite" {
-  plugin = "appwrite"
+  plugin = "mr-destructive/appwrite"
 
 }

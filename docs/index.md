@@ -40,7 +40,7 @@ where
 Download and install the latest Appwrite plugin:
 
 ```bash
-steampipe plugin install appwrite
+steampipe plugin install mr-destructive/appwrite
 ```
 
 ### Credentials
@@ -58,7 +58,7 @@ Installing the latest comereai plugin will create a config file (`~/.steampipe/c
 
 ```hcl
 connection "appwrite" {
-  plugin = "appwrite"
+  plugin = "mr-destructive/appwrite"
 
 }
 ```

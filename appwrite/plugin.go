@@ -28,6 +28,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"appwrite_executions":  tableExecutions(ctx),
 			"appwrite_files":       tableFiles(ctx),
 			"appwrite_functions":   tableFunctions(ctx),
+			"appwrite_health":      tableHealth(ctx),
 		},
 	}
 	return p
