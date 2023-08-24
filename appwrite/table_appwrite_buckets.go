@@ -26,6 +26,15 @@ func tableBuckets(ctx context.Context) *plugin.Table {
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
 			{Name: "file_extensions", Type: proto.ColumnType_STRING, Transform: transform.FromField("AllowedFileExtensions"), Description: "file extensions"},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("CreatedAt"), Description: "created at"},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("UpdatedAt"), Description: "updated at"},
+			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Permissions"), Description: "permissions"},
+			{Name: "file_security", Type: proto.ColumnType_BOOL, Transform: transform.FromField("FileSecurity"), Description: "file security"},
+			{Name: "enabled", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Enabled"), Description: "enabled"},
+			{Name: "maximum_file_size", Type: proto.ColumnType_INT, Transform: transform.FromField("MaximumFileSize"), Description: "maximum file size"},
+			{Name: "compression_type", Type: proto.ColumnType_STRING, Transform: transform.FromField("CompressionType"), Description: "compression type"},
+			{Name: "encryption", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Encryption"), Description: "encryption"},
+			{Name: "antivirus", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Antivirus"), Description: "antivirus"},
 
 			// Input Columns
 			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},

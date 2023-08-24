@@ -27,6 +27,13 @@ func tableCollections(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Name"), Description: "Name"},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.CreatedAt"), Description: "created at"},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.UpdatedAt"), Description: "updated at"},
+			{Name: "document_security", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Collection.DocumentSecurity"), Description: "document security"},
+			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Permissions"), Description: "permissions"},
+			{Name: "enabled", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Collection.Enabled"), Description: "enabled"},
+			{Name: "attributes", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Attributes"), Description: "attributes"},
+			{Name: "indexes", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Indexes"), Description: "indexes"},
 
 			// Input Columns
 			{Name: "database_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("DatabaseId"), Description: "DatabaseId"},

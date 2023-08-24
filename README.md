@@ -13,14 +13,14 @@ Use SQL to query account and more from Appwrite.
 Install the plugin with [Steampipe](https://steampipe.io):
 
 ```shell
-steampipe plugin install appwrite
+steampipe plugin install mr-destructive/appwrite
 ```
 
 Configure your plugin in `~/.steampipe/config/appwrite.spc`:
 
 ```hcl
 connection "appwrite" {
-  plugin  = "appwrite"
+  plugin  = "mr-destructive/appwrite"
   # ...
 }
 ```
@@ -52,7 +52,7 @@ Prerequisites:
 Clone:
 
 ```sh
-git clone https://github.com/turbot/steampipe-plugin-appwrite.git
+git clone https://github.com/mr-destructive/steampipe-plugin-appwrite.git
 cd steampipe-plugin-appwrite
 ```
 

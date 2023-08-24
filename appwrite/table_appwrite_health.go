@@ -23,12 +23,12 @@ func tableHealth(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "ping", Type: proto.ColumnType_INT, Transform: transform.FromField("Ping")},
-			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Status")},
-			{Name: "real_time", Type: proto.ColumnType_INT, Transform: transform.FromField("RealTime")},
-			{Name: "local_time", Type: proto.ColumnType_INT, Transform: transform.FromField("LocalTime")},
-			{Name: "diff", Type: proto.ColumnType_INT, Transform: transform.FromField("Diff")},
-			{Name: "size", Type: proto.ColumnType_INT, Transform: transform.FromField("Size")},
+			{Name: "ping", Type: proto.ColumnType_INT, Transform: transform.FromField("Status.Ping")},
+			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Status.Status")},
+			{Name: "real_time", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.RealTime")},
+			{Name: "local_time", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.LocalTime")},
+			{Name: "diff", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.Diff")},
+			{Name: "size", Type: proto.ColumnType_INT, Transform: transform.FromField("Queue.Size")},
 
 			// Input Columns
 			{Name: "service", Type: proto.ColumnType_STRING, Transform: transform.FromField("Service")},
@@ -42,15 +42,9 @@ type healthsRequestQual struct {
 }
 
 type healthRow struct {
-	appwrite.HealthStatus
-}
-
-type healthTimeRow struct {
-	appwrite.HealthTime
-}
-
-type healthQueueRow struct {
-	appwrite.HealthQueue
+	Status appwrite.HealthStatus
+	Queue  appwrite.HealthQueue
+	Time   appwrite.HealthTime
 }
 
 func health(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -77,31 +71,31 @@ func health(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (in
 	switch service {
 	case "http":
 		response, _ := client.Health()
-		row = healthRow{*response}
+		row = healthRow{Status: *response}
 	case "db":
 		response, _ := client.DBHealth()
-		row = healthRow{*response}
+		row = healthRow{Status: *response}
 	case "cache":
 		response, _ := client.CacheHealth()
-		row = healthRow{*response}
+		row = healthRow{Status: *response}
 	case "local-storage":
 		response, _ := client.LocalStorageHealth()
-		row = healthRow{*response}
+		row = healthRow{Status: *response}
 	case "function-queue":
 		response, _ := client.FunctionsQueue()
-		row = healthQueueRow{*response}
+		row = healthRow{Queue: *response}
 	case "logs-queue":
 		response, _ := client.LogsQueue()
-		row = healthQueueRow{*response}
+		row = healthRow{Queue: *response}
 	case "webhooks-queue":
 		response, _ := client.WebHooksQueue()
-		row = healthQueueRow{*response}
+		row = healthRow{Queue: *response}
 	case "time":
 		response, _ := client.TimeHealth()
-		row = healthTimeRow{*response}
+		row = healthRow{Time: *response}
 	default:
 		response, _ := client.TimeHealth()
-		row = healthTimeRow{*response}
+		row = healthRow{Time: *response}
 	}
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite_health.health", "api_error", err)

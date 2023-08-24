@@ -26,8 +26,20 @@ func tableExecutions(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.Name"), Description: "Name"},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.CreatedAt"), Description: "created at"},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.UpdatedAt"), Description: "updated at"},
+			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Execution.Permissions"), Description: "permissions"},
+			{Name: "function_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.FunctionId"), Description: "function id"},
+			{Name: "trigger", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.Trigger"), Description: "trigger"},
+			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.Status"), Description: "status"},
+			{Name: "status_code", Type: proto.ColumnType_INT, Transform: transform.FromField("Execution.StatusCode"), Description: "status code"},
+			{Name: "response", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.Response"), Description: "response"},
+			{Name: "stdout", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.Stdout"), Description: "stdout"},
+			{Name: "stderr", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.Stderr"), Description: "stderr"},
+			{Name: "duration", Type: proto.ColumnType_STRING, Transform: transform.FromField("Execution.Duration"), Description: "duration"},
 
 			// Input Columns
+			{Name: "function_id", Type: proto.ColumnType_STRING, Transform: transform.FromQual("function_id"), Description: "function id"},
 			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
 			{Name: "query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Query")},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
@@ -65,6 +77,7 @@ func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 	if len(query) == 0 {
 		query = []string{}
 	}
+	function_id := d.EqualsQuals["function_id"].GetStringValue()
 	search := d.EqualsQuals["search_query"].GetStringValue()
 
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
@@ -81,7 +94,7 @@ func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 		Client: *conn,
 	}
 
-	executionsList, err := functions.ListExecutions(search, "", query)
+	executionsList, err := functions.ListExecutions(function_id, "", query)
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.executions", "api_error", err)
 		return nil, err

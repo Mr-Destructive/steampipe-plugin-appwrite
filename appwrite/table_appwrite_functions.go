@@ -26,7 +26,18 @@ func tableFunctions(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Name"), Description: "Name"},
-			{Name: "runtime", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Runtime"), Description: "Runtime"},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.CreatedAt"), Description: "created at"},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.UpdatedAt"), Description: "updated at"},
+			{Name: "execute", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Execute"), Description: "execute"},
+			{Name: "enabled", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Function.Enabled"), Description: "enabled"},
+			{Name: "variable", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Variable"), Description: "variable"},
+			{Name: "runtime", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Runtime"), Description: "runtime"},
+			{Name: "deployment", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Deployment"), Description: "deployment"},
+			{Name: "events", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Events"), Description: "events"},
+			{Name: "schedule", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Schedule"), Description: "schedule"},
+			{Name: "schedule_next", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.ScheduleNext"), Description: "schedule_next"},
+			{Name: "schedule_previous", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.SchedulePrevious"), Description: "schedule_previous"},
+			{Name: "timeout", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Timeout"), Description: "timeout"},
 
 			// Input Columns
 			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},

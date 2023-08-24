@@ -28,6 +28,9 @@ func tableDocuments(ctx context.Context) *plugin.Table {
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Name"), Description: "Name"},
 			{Name: "fields", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Fields"), Description: "Fields"},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.CreatedAt"), Description: "created at"},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.UpdatedAt"), Description: "updated at"},
+            {Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Permissions"), Description: "permissions"},
 
 			// Input Columns
 			{Name: "database_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("DatabaseId"), Description: "DatabaseId"},

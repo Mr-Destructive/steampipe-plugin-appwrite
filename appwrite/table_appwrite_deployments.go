@@ -26,8 +26,21 @@ func tableDeployments(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.Name"), Description: "Name"},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.CreatedAt"), Description: "created at"},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.UpdatedAt"), Description: "updated at"},
+			{Name: "resource_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.ResourceId"), Description: "resource id"},
+			{Name: "resource_type", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.ResourceType"), Description: "resource type"},
+			{Name: "entry_point", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.EntryPoint"), Description: "entry point"},
+			{Name: "size", Type: proto.ColumnType_INT, Transform: transform.FromField("Deployment.Size"), Description: "size"},
+			{Name: "build_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.BuildId"), Description: "build id"},
+			{Name: "activate", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Deployment.Activate"), Description: "activate"},
+			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.Status"), Description: "status"},
+			{Name: "build_stdout", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.BuildStdout"), Description: "build stdout"},
+			{Name: "build_stderr", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.BuildStderr"), Description: "build stderr"},
+			{Name: "build_time", Type: proto.ColumnType_STRING, Transform: transform.FromField("Deployment.BuildTime"), Description: "build time"},
 
 			// Input Columns
+			{Name: "function_id", Type: proto.ColumnType_STRING, Transform: transform.FromQual("function_id"), Description: "function id"},
 			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
 			{Name: "query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Query")},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
@@ -36,8 +49,9 @@ func tableDeployments(ctx context.Context) *plugin.Table {
 }
 
 type deploymentsRequestQual struct {
-	Search *string   `json:"search_query"`
-	Query  *[]string `json:"query"`
+	FunctionId *string   `json:"function_id"`
+	Search     *string   `json:"search_query"`
+	Query      *[]string `json:"query"`
 }
 
 type deploymentsRow struct {
@@ -65,6 +79,8 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	if len(query) == 0 {
 		query = []string{}
 	}
+
+	function_id := d.EqualsQuals["function_id"].GetStringValue()
 	search := d.EqualsQuals["search_query"].GetStringValue()
 
 	settingsString := d.EqualsQuals["settings"].GetJsonbValue()
@@ -86,7 +102,7 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	functions := appwrite.Function{
 		Client: *conn,
 	}
-	deploymentsList, err := functions.ListDeployments(search, "", query)
+	deploymentsList, err := functions.ListDeployments(function_id, "", query)
 	if err != nil {
 		plugin.Logger(ctx).Error("appwrite.deployments", "api_error", err)
 		return nil, err

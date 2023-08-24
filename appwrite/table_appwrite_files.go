@@ -26,6 +26,14 @@ func tableFiles(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("CreatedAt"), Description: "created at"},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("UpdatedAt"), Description: "updated at"},
+			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Permissions"), Description: "permissions"},
+			{Name: "signature", Type: proto.ColumnType_STRING, Transform: transform.FromField("Signature"), Description: "signature"},
+			{Name: "mime_type", Type: proto.ColumnType_STRING, Transform: transform.FromField("MimeType"), Description: "mime type"},
+			{Name: "size_original", Type: proto.ColumnType_INT, Transform: transform.FromField("SizeOriginal"), Description: "size original"},
+			{Name: "chunks_total", Type: proto.ColumnType_INT, Transform: transform.FromField("ChunksTotal"), Description: "chunks total"},
+			{Name: "chunks_uploaded", Type: proto.ColumnType_INT, Transform: transform.FromField("ChunksUploaded"), Description: "chunks uploaded"},
 
 			// Input Columns
 			{Name: "bucket_id", Type: proto.ColumnType_STRING, Transform: transform.FromQual("bucket_id"), Description: "bucket id"},

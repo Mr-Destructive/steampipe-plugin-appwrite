@@ -26,6 +26,8 @@ func tableDatabases(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.Id"), Description: "id"},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.Name"), Description: "Name"},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.CreatedAt"), Description: "created at"},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.UpdatedAt"), Description: "updated at"},
 
 			// Input Columns
 			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
