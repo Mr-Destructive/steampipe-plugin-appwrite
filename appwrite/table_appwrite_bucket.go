@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableBuckets(ctx context.Context) *plugin.Table {
+func tableAppwriteBucket(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_buckets",
+		Name:        "appwrite_bucket",
 		Description: "Query buckets meta information from an appwrite project",
 		List: &plugin.ListConfig{
-			Hydrate: buckets,
+			Hydrate: listBuckets,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search_query", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
@@ -53,12 +53,11 @@ type bucketsRow struct {
 	Search string
 }
 
-func buckets(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listBuckets(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
-	// NOTE: IMPLEMENT THIS based on the service/provider
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.buckets", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_bucket.listBuckets", "connection_error", err)
 		return nil, err
 	}
 
@@ -69,7 +68,7 @@ func buckets(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (i
 		var crQual accountsRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite.buckets", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_bucket.listBuckets", "unmarshal_error", err)
 			return nil, err
 		}
 	}
@@ -82,10 +81,10 @@ func buckets(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (i
 
 	bucketsList, err := storage.ListBuckets(search, 0, 0, "")
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.buckets", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_bucket.listBuckets", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("appwrite.buckets", "response", bucketsList)
+	plugin.Logger(ctx).Trace("appwrite_bucket.listBuckets", "response", bucketsList)
 	buckers := *bucketsList
 	for _, bucket := range buckers.Buckets {
 		row := bucketsRow{bucket, search}

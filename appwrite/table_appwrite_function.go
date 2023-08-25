@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableFunctions(ctx context.Context) *plugin.Table {
+func tableAppwriteFunction(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_functions",
+		Name:        "appwrite_function",
 		Description: "Query meta information of a function for an appwrite project",
 		List: &plugin.ListConfig{
-			Hydrate: functions,
+			Hydrate: listFunctions,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search_query", Require: plugin.Optional},
 				{Name: "query", Require: plugin.Optional},
@@ -28,16 +28,16 @@ func tableFunctions(ctx context.Context) *plugin.Table {
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Name"), Description: "Name"},
 			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.CreatedAt"), Description: "created at"},
 			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.UpdatedAt"), Description: "updated at"},
-			{Name: "execute", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Execute"), Description: "execute"},
+			{Name: "execute", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Execute"), Description: "execute"},
 			{Name: "enabled", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Function.Enabled"), Description: "enabled"},
-			{Name: "variable", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Variable"), Description: "variable"},
+			{Name: "variable", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Variable"), Description: "variable"},
 			{Name: "runtime", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Runtime"), Description: "runtime"},
 			{Name: "deployment", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Deployment"), Description: "deployment"},
-			{Name: "events", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Events"), Description: "events"},
-			{Name: "schedule", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Schedule"), Description: "schedule"},
-			{Name: "schedule_next", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.ScheduleNext"), Description: "schedule_next"},
-			{Name: "schedule_previous", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.SchedulePrevious"), Description: "schedule_previous"},
-			{Name: "timeout", Type: proto.ColumnType_JSON, Transform: transform.FromField("Function.Timeout"), Description: "timeout"},
+			{Name: "events", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Events"), Description: "events"},
+			{Name: "schedule", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Schedule"), Description: "schedule"},
+			{Name: "schedule_next", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.ScheduleNext"), Description: "schedule_next"},
+			{Name: "schedule_previous", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.SchedulePrevious"), Description: "schedule_previous"},
+			{Name: "timeout", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Timeout"), Description: "timeout"},
 
 			// Input Columns
 			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
@@ -58,11 +58,11 @@ type functionsRow struct {
 	Search   string
 }
 
-func functions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listFunctions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite_functions.functions", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_function.functions", "connection_error", err)
 		return nil, err
 	}
 
@@ -72,7 +72,7 @@ func functions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	if queryString != "" {
 		err := json.Unmarshal([]byte(queryString), &query)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite_functions.listFunctions", "connection_error", err)
+			plugin.Logger(ctx).Error("appwrite_function.listFunctions", "connection_error", err)
 			return nil, err
 		}
 	}
@@ -86,7 +86,7 @@ func functions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		var crQual functionssRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite.functions", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_function.listFunctions", "unmarshal_error", err)
 			return nil, err
 		}
 		if crQual.Query != nil {
@@ -103,10 +103,10 @@ func functions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 
 	functionsList, err := functions.ListFunctions(search, query)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.functions", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_function.listFunctions", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("appwrite.functions", "response", functionsList)
+	plugin.Logger(ctx).Trace("appwrite_function.listFunctions", "response", functionsList)
 	funcs := *functionsList
 	for _, f := range funcs.Functions {
 		row := functionsRow{

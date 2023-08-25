@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableCollections(ctx context.Context) *plugin.Table {
+func tableAppwriteCollection(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_collections",
+		Name:        "appwrite_collection",
 		Description: "Query collections of an appwrite database.",
 		List: &plugin.ListConfig{
-			Hydrate: collections,
+			Hydrate: listCollections,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "database_id", Require: plugin.Optional},
 				{Name: "search_query", Require: plugin.Optional},
@@ -56,11 +56,11 @@ type collectionRow struct {
 	Query      []string
 }
 
-func collections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listCollections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.collections", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_collection.listCollections", "connection_error", err)
 		return nil, err
 	}
 
@@ -69,7 +69,7 @@ func collections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	if queryString != "" {
 		err := json.Unmarshal([]byte(queryString), &query)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite_functions.listFunctions", "connection_error", err)
+			plugin.Logger(ctx).Error("appwrite_collection.listCollections", "connection_error", err)
 			return nil, err
 		}
 	}
@@ -80,7 +80,7 @@ func collections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		var crQual collectionsRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite.collections", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_collection.listCollections", "unmarshal_error", err)
 			return nil, err
 		}
 		if crQual.Query != nil {
@@ -98,10 +98,10 @@ func collections(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 
 	collectionList, err := database.ListCollections(databaseId, search, query)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.collections", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_collection.listCollections", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("appwrite.collections", "response", collectionList)
+	plugin.Logger(ctx).Trace("appwrite_collection.listCollections", "response", collectionList)
 	collections := *collectionList
 	for _, collection := range collections.Collections {
 		row := collectionRow{

@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableExecutions(ctx context.Context) *plugin.Table {
+func tableAppwriteExecution(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_executions",
+		Name:        "appwrite_execution",
 		Description: "Query executions meta information of a function deployment in an appwrite project",
 		List: &plugin.ListConfig{
-			Hydrate: executions,
+			Hydrate: listExecutions,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search_query", Require: plugin.Optional},
 				{Name: "query", Require: plugin.Optional},
@@ -58,11 +58,11 @@ type executionsRow struct {
 	Query     []string
 }
 
-func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listExecutions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.executions", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_execution.listExecutions", "connection_error", err)
 		return nil, err
 	}
 	queryString := d.EqualsQuals["query"].GetStringValue()
@@ -70,7 +70,7 @@ func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 	if queryString != "" {
 		err := json.Unmarshal([]byte(queryString), &query)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite_functions.listFunctions", "connection_error", err)
+			plugin.Logger(ctx).Error("appwrite_execution.listExecutions", "connection_error", err)
 			return nil, err
 		}
 	}
@@ -85,7 +85,7 @@ func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 		var crQual executionssRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite.executions", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_execution.listExecutions", "unmarshal_error", err)
 			return nil, err
 		}
 	}
@@ -96,10 +96,10 @@ func executions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 
 	executionsList, err := functions.ListExecutions(function_id, "", query)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.executions", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_execution.listExecutions", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("appwrite.executions", "response", executionsList)
+	plugin.Logger(ctx).Trace("appwrite_execution.listExecutions", "response", executionsList)
 	executions := *executionsList
 	for _, execution := range executions.Executions {
 		row := executionsRow{

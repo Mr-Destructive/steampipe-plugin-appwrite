@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableFiles(ctx context.Context) *plugin.Table {
+func tableAppwriteFile(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_files",
+		Name:        "appwrite_file",
 		Description: "Query files meta information in a bucket for an appwrite project",
 		List: &plugin.ListConfig{
-			Hydrate: files,
+			Hydrate: listFiles,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "bucket_id", Require: plugin.Optional},
 				{Name: "search_query", Require: plugin.Optional},
@@ -56,11 +56,11 @@ type filesRow struct {
 	Search   string
 }
 
-func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listFiles(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.files", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_file.listFiles", "connection_error", err)
 		return nil, err
 	}
 
@@ -69,7 +69,7 @@ func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (int
 		var crQual filesRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite.files", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_file.listFiles", "unmarshal_error", err)
 			return nil, err
 		}
 	}
@@ -82,10 +82,10 @@ func files(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (int
 
 	filesList, err := storage.ListFiles(bucketId, search, 0, 0, "")
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.files", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_file.listFiles", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("appwrite.files", "response", filesList)
+	plugin.Logger(ctx).Trace("appwrite_file.listFiles", "response", filesList)
 	files := *filesList
 	for _, f := range files.Files {
 		row := filesRow{f, bucketId, search}

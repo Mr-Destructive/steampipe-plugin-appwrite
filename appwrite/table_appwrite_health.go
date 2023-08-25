@@ -10,7 +10,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableHealth(ctx context.Context) *plugin.Table {
+func tableAppwriteHealth(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "appwrite_health",
 		Description: "Get health of various services in your appwrite project",

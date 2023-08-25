@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableDeployments(ctx context.Context) *plugin.Table {
+func tableAppwriteDeployment(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_deployments",
+		Name:        "appwrite_deployment",
 		Description: "Query deployment information of a function for an appwrite project",
 		List: &plugin.ListConfig{
-			Hydrate: deployments,
+			Hydrate: listDeployments,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search_query", Require: plugin.Optional},
 				{Name: "query", Require: plugin.Optional},
@@ -60,11 +60,11 @@ type deploymentsRow struct {
 	Query      []string
 }
 
-func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listDeployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.deployments", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_deployment.listDeployments", "connection_error", err)
 		return nil, err
 	}
 	queryString := d.EqualsQuals["query"].GetStringValue()
@@ -72,7 +72,7 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	if queryString != "" {
 		err := json.Unmarshal([]byte(queryString), &query)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite_functions.listFunctions", "connection_error", err)
+			plugin.Logger(ctx).Error("appwrite_deployment.listDeployments", "connection_error", err)
 			return nil, err
 		}
 	}
@@ -88,7 +88,7 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		var crQual deploymentsRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite.deployments", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_deployment.listDeployments", "unmarshal_error", err)
 			return nil, err
 		}
 		if crQual.Query != nil {
@@ -104,10 +104,10 @@ func deployments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	}
 	deploymentsList, err := functions.ListDeployments(function_id, "", query)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.deployments", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_deployment.listDeployments", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("appwrite.deployments", "response", deploymentsList)
+	plugin.Logger(ctx).Trace("appwrite_deployment.listDeployments", "response", deploymentsList)
 	deployments := *deploymentsList
 	for _, deployment := range deployments.Deployments {
 		row := deploymentsRow{

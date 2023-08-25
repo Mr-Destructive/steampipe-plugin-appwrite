@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableAccounts(ctx context.Context) *plugin.Table {
+func tableAppwriteAccount(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_accounts",
+		Name:        "appwrite_account",
 		Description: "Query users in an appwrite project",
 		List: &plugin.ListConfig{
-			Hydrate: accounts,
+			Hydrate: listAccounts,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search_query", Require: plugin.Optional},
 				{Name: "offset", Require: plugin.Optional},
@@ -53,12 +53,11 @@ type accountsRow struct {
 	Search string
 }
 
-func accounts(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listAccounts(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
-	// NOTE: IMPLEMENT THIS based on the service/provider
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("accounts.accounts", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_appwrite_account.listAccounts", "connection_error", err)
 		return nil, err
 	}
 
@@ -69,7 +68,7 @@ func accounts(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 		var crQual accountsRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("accounts.accounts", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_account.listAccounts", "unmarshal_error", err)
 			return nil, err
 		}
 	}
@@ -82,10 +81,10 @@ func accounts(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 
 	userList, err := users.List(search, 0, 0, "")
 	if err != nil {
-		plugin.Logger(ctx).Error("accounts.accounts", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_account.listAccounts", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("accounts.accounts", "response", userList)
+	plugin.Logger(ctx).Trace("appwrite_account.listAccounts", "response", userList)
 	for _, u := range userList {
 		row := accountsRow{u, search}
 		d.StreamListItem(ctx, row)

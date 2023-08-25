@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableDocuments(ctx context.Context) *plugin.Table {
+func tableAppwriteDocument(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_documents",
+		Name:        "appwrite_document",
 		Description: "Query documents of a collection from an appwrite database",
 		List: &plugin.ListConfig{
-			Hydrate: documents,
+			Hydrate: listDocuments,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "database_id", Require: plugin.Optional},
 				{Name: "collection_id", Require: plugin.Optional},
@@ -30,7 +30,7 @@ func tableDocuments(ctx context.Context) *plugin.Table {
 			{Name: "fields", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Fields"), Description: "Fields"},
 			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.CreatedAt"), Description: "created at"},
 			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.UpdatedAt"), Description: "updated at"},
-            {Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Permissions"), Description: "permissions"},
+			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Permissions"), Description: "permissions"},
 
 			// Input Columns
 			{Name: "database_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("DatabaseId"), Description: "DatabaseId"},
@@ -52,11 +52,11 @@ type documentRow struct {
 	Search   string
 }
 
-func documents(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listDocuments(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.documents", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_document.listDocuments", "connection_error", err)
 		return nil, err
 	}
 
@@ -65,7 +65,7 @@ func documents(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		var crQual documentsRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite.documents", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_document.listDocuments", "unmarshal_error", err)
 			return nil, err
 		}
 	}
@@ -79,10 +79,10 @@ func documents(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 
 	documentList, err := database.ListDocuments(databaseId, collectionId, []interface{}{}, 0, 0, "", "", "", search, 0, 0)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.documents", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_document.listDocuments", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("appwrite.documents", "response", documentList)
+	plugin.Logger(ctx).Trace("appwrite_document.listDocuments", "response", documentList)
 	documents := *documentList
 	for _, document := range documents.Documents {
 		row := documentRow{

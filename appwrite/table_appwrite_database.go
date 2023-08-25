@@ -10,12 +10,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableDatabases(ctx context.Context) *plugin.Table {
+func tableAppwriteDatabase(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "appwrite_databases",
+		Name:        "appwrite_database",
 		Description: "Query database meta information in an appwrite project",
 		List: &plugin.ListConfig{
-			Hydrate: databases,
+			Hydrate: listDatabases,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search_query", Require: plugin.Optional},
 				{Name: "query", Require: plugin.Optional},
@@ -48,11 +48,11 @@ type databasesRow struct {
 	Query    []string
 }
 
-func databases(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listDatabases(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 
 	conn, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.databases", "connection_error", err)
+		plugin.Logger(ctx).Error("appwrite_database.listDatabases", "connection_error", err)
 		return nil, err
 	}
 	queryString := d.EqualsQuals["query"].GetStringValue()
@@ -60,7 +60,7 @@ func databases(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	if queryString != "" {
 		err := json.Unmarshal([]byte(queryString), &query)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite_functions.listFunctions", "connection_error", err)
+			plugin.Logger(ctx).Error("appwrite_database.listDatabases", "connection_error", err)
 			return nil, err
 		}
 	}
@@ -74,7 +74,7 @@ func databases(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		var crQual databasessRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
-			plugin.Logger(ctx).Error("appwrite.databases", "unmarshal_error", err)
+			plugin.Logger(ctx).Error("appwrite_database.listDatabases", "unmarshal_error", err)
 			return nil, err
 		}
 		if crQual.Query != nil {
@@ -91,10 +91,10 @@ func databases(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 
 	databasesList, err := database.ListDatabases(search, query)
 	if err != nil {
-		plugin.Logger(ctx).Error("appwrite.databases", "api_error", err)
+		plugin.Logger(ctx).Error("appwrite_database.listDatabases", "api_error", err)
 		return nil, err
 	}
-	plugin.Logger(ctx).Trace("appwrite.databases", "response", databasesList)
+	plugin.Logger(ctx).Trace("appwrite_database.listDatabases", "response", databasesList)
 	databases := *databasesList
 	for _, database := range databases.Databases {
 		row := databasesRow{
