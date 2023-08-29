@@ -25,9 +25,9 @@ func tableAppwriteDocument(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Id"), Description: "id"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Name"), Description: "Name"},
-			{Name: "fields", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Fields"), Description: "Fields"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Id"), Description: "The unique ID for the document."},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Name"), Description: "The Name of the document."},
+			{Name: "fields", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Fields"), Description: "The fields in the document."},
 			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.CreatedAt"), Description: "created at"},
 			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.UpdatedAt"), Description: "updated at"},
 			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Permissions"), Description: "permissions"},
@@ -35,7 +35,7 @@ func tableAppwriteDocument(ctx context.Context) *plugin.Table {
 			// Input Columns
 			{Name: "database_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("DatabaseId"), Description: "DatabaseId"},
 			{Name: "collection_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("CollectionId"), Description: "CollectionId"},
-			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search"), Description: "The string to filter the results from the request."},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}

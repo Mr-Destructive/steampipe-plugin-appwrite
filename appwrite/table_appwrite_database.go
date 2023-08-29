@@ -24,14 +24,14 @@ func tableAppwriteDatabase(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.Id"), Description: "id"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.Name"), Description: "Name"},
-			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.CreatedAt"), Description: "created at"},
-			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.UpdatedAt"), Description: "updated at"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.Id"), Description: "The unique ID for the database."},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.Name"), Description: "The Name of the database."},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.CreatedAt"), Description: "Database creation date in ISO 8601 format."},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.UpdatedAt"), Description: "Database updation date in ISO 8601 format."},
 
 			// Input Columns
-			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
-			{Name: "query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Query")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search"), Description: "The string for filtering the results from the request."},
+			{Name: "query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Query"), Description: "A string of query type as filter for the request."},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}

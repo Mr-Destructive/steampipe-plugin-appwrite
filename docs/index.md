@@ -60,9 +60,24 @@ Installing the latest comereai plugin will create a config file (`~/.steampipe/c
 connection "appwrite" {
   plugin = "mr-destructive/appwrite"
 
+  # Secret key for requests. Required.
+  # This can also be set via the `APPWRITE_SECRET_KEY` environment variable.
+  # secret_key = "7a1f0d410a6ab90110232e3f9578a0e5ac33453493930e195c7"
+
+  # Project Id for specific appwrite project. Required
+  # This can also be set via the `APPWRITE_PROJECT_ID` environment variable.
+  # project_id = "68a121f3e41164679a30"
 }
 ```
 
+## Credentials from Environment Variables
+
+The Appwrite plugin will use the standard Appwrite environment variables to obtain credentials only if other arguments (secret_key and project_id) are not specified in the connection:
+
+```
+export APPWRITE_SECRET_KEY="7a1f0d410a6ab90110232e3f9578a0e5ac33453493930e195c7"
+export APPWRITE_PROJECT_ID="68a121f3e41164679a30"
+```
 
 ## Get involved
 

@@ -24,21 +24,20 @@ func tableAppwriteFile(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
-			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("CreatedAt"), Description: "created at"},
-			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("UpdatedAt"), Description: "updated at"},
-			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Permissions"), Description: "permissions"},
-			{Name: "signature", Type: proto.ColumnType_STRING, Transform: transform.FromField("Signature"), Description: "signature"},
-			{Name: "mime_type", Type: proto.ColumnType_STRING, Transform: transform.FromField("MimeType"), Description: "mime type"},
-			{Name: "size_original", Type: proto.ColumnType_INT, Transform: transform.FromField("SizeOriginal"), Description: "size original"},
-			{Name: "chunks_total", Type: proto.ColumnType_INT, Transform: transform.FromField("ChunksTotal"), Description: "chunks total"},
-			{Name: "chunks_uploaded", Type: proto.ColumnType_INT, Transform: transform.FromField("ChunksUploaded"), Description: "chunks uploaded"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The unique file ID."},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "The Name of the file."},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("CreatedAt"), Description: "The file creation date in ISO 8601 format."},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("UpdatedAt"), Description: "The file updation date in ISO 8601 format."},
+			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Permissions"), Description: "The permission setting(list of strings) for the file access."},
+			{Name: "signature", Type: proto.ColumnType_STRING, Transform: transform.FromField("Signature"), Description: "The MD5 signature for the file."},
+			{Name: "mime_type", Type: proto.ColumnType_STRING, Transform: transform.FromField("MimeType"), Description: "The mime type for the file."},
+			{Name: "size_original", Type: proto.ColumnType_INT, Transform: transform.FromField("SizeOriginal"), Description: "The original size of file in bytes."},
+			{Name: "chunks_total", Type: proto.ColumnType_INT, Transform: transform.FromField("ChunksTotal"), Description: "The total number of chunks available for the file."},
+			{Name: "chunks_uploaded", Type: proto.ColumnType_INT, Transform: transform.FromField("ChunksUploaded"), Description: "The total number of chunks of file which have been uploaded."},
 
 			// Input Columns
-			{Name: "bucket_id", Type: proto.ColumnType_STRING, Transform: transform.FromQual("bucket_id"), Description: "bucket id"},
-			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
-			{Name: "offset", Type: proto.ColumnType_INT, Transform: transform.FromField("Offset")},
+			{Name: "bucket_id", Type: proto.ColumnType_STRING, Transform: transform.FromQual("bucket_id"), Description: "The unique ID for the bucket to list the files from."},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search"), Description: "The string of query type to filter the results from the request."},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}
@@ -47,7 +46,6 @@ func tableAppwriteFile(ctx context.Context) *plugin.Table {
 type filesRequestQual struct {
 	BucketId *string `json:"bucket_id"`
 	Search   *string
-	Order    *string
 }
 
 type filesRow struct {

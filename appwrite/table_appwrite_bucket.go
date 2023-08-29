@@ -23,21 +23,22 @@ func tableAppwriteBucket(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
-			{Name: "file_extensions", Type: proto.ColumnType_STRING, Transform: transform.FromField("AllowedFileExtensions"), Description: "file extensions"},
-			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("CreatedAt"), Description: "created at"},
-			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("UpdatedAt"), Description: "updated at"},
-			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Permissions"), Description: "permissions"},
-			{Name: "file_security", Type: proto.ColumnType_BOOL, Transform: transform.FromField("FileSecurity"), Description: "file security"},
-			{Name: "enabled", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Enabled"), Description: "enabled"},
-			{Name: "maximum_file_size", Type: proto.ColumnType_INT, Transform: transform.FromField("MaximumFileSize"), Description: "maximum file size"},
-			{Name: "compression_type", Type: proto.ColumnType_STRING, Transform: transform.FromField("CompressionType"), Description: "compression type"},
-			{Name: "encryption", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Encryption"), Description: "encryption"},
-			{Name: "antivirus", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Antivirus"), Description: "antivirus"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The ID of the bucket."},
+			{Name: "title", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The Name or ID of the bucket."},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "The name of the bucket."},
+			{Name: "file_extensions", Type: proto.ColumnType_STRING, Transform: transform.FromField("AllowedFileExtensions"), Description: "The allowed file extensions for the bucket."},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("CreatedAt"), Description: "Bucket creation time in ISO 8601 format."},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("UpdatedAt"), Description: "Bucket update time in ISO 8601 format"},
+			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Permissions"), Description: "The permission setting(list of strings) for the bucket."},
+			{Name: "file_security", Type: proto.ColumnType_BOOL, Transform: transform.FromField("FileSecurity"), Description: "A boolean value/flag for file-level security is enabled on the bucket."},
+			{Name: "enabled", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Enabled"), Description: "Flag for checking if the bucket is enabled or disabled as storage."},
+			{Name: "maximum_file_size", Type: proto.ColumnType_INT, Transform: transform.FromField("MaximumFileSize"), Description: "Maximum file size supported in the bucket."},
+			{Name: "compression_type", Type: proto.ColumnType_STRING, Transform: transform.FromField("CompressionType"), Description: "Compression algorithm choosen for compression. Will be one of none, gzip, or zstd"},
+			{Name: "encryption", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Encryption"), Description: "A boolean value for chacking if encryption is enabled in the bucket or not."},
+			{Name: "antivirus", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Antivirus"), Description: "A boolean value for chacking if the virus scanning is enabled in the bucket or not."},
 
 			// Input Columns
-			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search"), Description: "The string value to filter the results from the request."},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}
@@ -45,7 +46,6 @@ func tableAppwriteBucket(ctx context.Context) *plugin.Table {
 
 type bucketsRequestQual struct {
 	Search *string
-	Order  *string
 }
 
 type bucketsRow struct {

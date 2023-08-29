@@ -23,15 +23,15 @@ func tableAppwriteHealth(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "ping", Type: proto.ColumnType_INT, Transform: transform.FromField("Status.Ping")},
-			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Status.Status")},
-			{Name: "real_time", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.RealTime")},
-			{Name: "local_time", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.LocalTime")},
-			{Name: "diff", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.Diff")},
-			{Name: "size", Type: proto.ColumnType_INT, Transform: transform.FromField("Queue.Size")},
+			{Name: "ping", Type: proto.ColumnType_INT, Transform: transform.FromField("Status.Ping"), Description: "Duration in milliseconds how long the health check took."},
+			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Status.Status"), Description: "Service status. Possible values can are: pass, fail"},
+			{Name: "real_time", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.RealTime"), Description: "Current unix timestamp on trustful remote server."},
+			{Name: "local_time", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.LocalTime"), Description: "Current unix timestamp of local server where Appwrite runs."},
+			{Name: "diff", Type: proto.ColumnType_INT, Transform: transform.FromField("Time.Diff"), Description: "Difference of unix remote and local timestamps in milliseconds."},
+			{Name: "size", Type: proto.ColumnType_INT, Transform: transform.FromField("Queue.Size"), Description: "Amount of actions in the queue."},
 
 			// Input Columns
-			{Name: "service", Type: proto.ColumnType_STRING, Transform: transform.FromField("Service")},
+			{Name: "service", Type: proto.ColumnType_STRING, Transform: transform.FromField("Service"), Description: "The string value as either http, http,db,cache, local-storage, function-queue, logs-queue, webhooks-queue, or time"},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}

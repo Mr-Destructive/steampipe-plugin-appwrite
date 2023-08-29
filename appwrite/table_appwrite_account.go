@@ -24,18 +24,17 @@ func tableAppwriteAccount(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "id"},
-			{Name: "email", Type: proto.ColumnType_STRING, Transform: transform.FromField("Email"), Description: "Email"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "Name"},
-			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Status"), Description: "status"},
-			{Name: "phone", Type: proto.ColumnType_STRING, Transform: transform.FromField("Phone"), Description: "phone"},
-			{Name: "password", Type: proto.ColumnType_STRING, Transform: transform.FromField("Phone"), Description: "phone"},
-			{Name: "email_verification", Type: proto.ColumnType_BOOL, Transform: transform.FromField("EmailVerification"), Description: "email verification"},
-			{Name: "phone_verification", Type: proto.ColumnType_BOOL, Transform: transform.FromField("PhoneVerification"), Description: "phone verification"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The unique ID of the user account."},
+			{Name: "email", Type: proto.ColumnType_STRING, Transform: transform.FromField("Email"), Description: "The Email ID of the user account."},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "The Name of the user account."},
+			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Status"), Description: "The active status of the user account."},
+			{Name: "phone", Type: proto.ColumnType_STRING, Transform: transform.FromField("Phone"), Description: "The phone number of the user account."},
+			{Name: "password", Type: proto.ColumnType_STRING, Transform: transform.FromField("Phone"), Description: "The password of the user account."},
+			{Name: "email_verification", Type: proto.ColumnType_BOOL, Transform: transform.FromField("EmailVerification"), Description: "The status of the email verification of the user account."},
+			{Name: "phone_verification", Type: proto.ColumnType_BOOL, Transform: transform.FromField("PhoneVerification"), Description: "The status of the phone verification of the user account."},
 
 			// Input Columns
-			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
-			{Name: "offset", Type: proto.ColumnType_INT, Transform: transform.FromField("Offset")},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search"), Description: "The string as a search filter the results from the request."},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}

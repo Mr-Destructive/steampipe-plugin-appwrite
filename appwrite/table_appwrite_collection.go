@@ -25,20 +25,20 @@ func tableAppwriteCollection(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			// Result columns
-			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Id"), Description: "id"},
-			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Name"), Description: "Name"},
-			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.CreatedAt"), Description: "created at"},
-			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.UpdatedAt"), Description: "updated at"},
-			{Name: "document_security", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Collection.DocumentSecurity"), Description: "document security"},
-			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Permissions"), Description: "permissions"},
-			{Name: "enabled", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Collection.Enabled"), Description: "enabled"},
-			{Name: "attributes", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Attributes"), Description: "attributes"},
-			{Name: "indexes", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Indexes"), Description: "indexes"},
+			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Id"), Description: "The unique ID of the collection."},
+			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Name"), Description: "The Name of the collection."},
+			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.CreatedAt"), Description: "Collection creation date in ISO 8601 format."},
+			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.UpdatedAt"), Description: "Collection updation date in ISO 8601 format."},
+			{Name: "document_security", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Collection.DocumentSecurity"), Description: "A boolean value for checking if the document-level permissions are enabled or not."},
+			{Name: "permissions", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Permissions"), Description: "The permission settings(list of strings) for the collection access."},
+			{Name: "enabled", Type: proto.ColumnType_BOOL, Transform: transform.FromField("Collection.Enabled"), Description: "A boolean value for checking if the collection is enabled or not."},
+			{Name: "attributes", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Attributes"), Description: "A list of attributes of the collection."},
+			{Name: "indexes", Type: proto.ColumnType_JSON, Transform: transform.FromField("Collection.Indexes"), Description: "A list of indexes for the collection."},
 
 			// Input Columns
-			{Name: "database_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("DatabaseId"), Description: "DatabaseId"},
-			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search")},
-			{Name: "query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Query")},
+			{Name: "database_id", Type: proto.ColumnType_STRING, Transform: transform.FromField("DatabaseId"), Description: "The ID of the database to get collections from."},
+			{Name: "search_query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Search"), Description: "The search string as filter for the request."},
+			{Name: "query", Type: proto.ColumnType_STRING, Transform: transform.FromField("Query"), Description: "A string of query type as filter for the request."},
 			{Name: "settings", Type: proto.ColumnType_JSON, Transform: transform.FromQual("settings"), Description: "Settings is a JSONB object that accepts any of the completion API request parameters."},
 		},
 	}
