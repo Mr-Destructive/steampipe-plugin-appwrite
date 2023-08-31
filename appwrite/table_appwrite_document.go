@@ -27,6 +27,7 @@ func tableAppwriteDocument(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Id"), Description: "The unique ID for the document."},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.Name"), Description: "The Name of the document."},
+			{Name: "title", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The Name or ID of the document."},
 			{Name: "fields", Type: proto.ColumnType_JSON, Transform: transform.FromField("Document.Fields"), Description: "The fields in the document."},
 			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.CreatedAt"), Description: "created at"},
 			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Document.UpdatedAt"), Description: "updated at"},

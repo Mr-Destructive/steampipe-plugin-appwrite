@@ -25,6 +25,7 @@ func tableAppwriteAccount(ctx context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The unique ID of the user account."},
+			{Name: "title", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The Name or ID of the account."},
 			{Name: "email", Type: proto.ColumnType_STRING, Transform: transform.FromField("Email"), Description: "The Email ID of the user account."},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Name"), Description: "The Name of the user account."},
 			{Name: "status", Type: proto.ColumnType_STRING, Transform: transform.FromField("Status"), Description: "The active status of the user account."},

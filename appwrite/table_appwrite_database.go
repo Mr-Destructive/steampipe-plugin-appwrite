@@ -25,6 +25,7 @@ func tableAppwriteDatabase(ctx context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.Id"), Description: "The unique ID for the database."},
+			{Name: "title", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The Name or ID of the database."},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.Name"), Description: "The Name of the database."},
 			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.CreatedAt"), Description: "Database creation date in ISO 8601 format."},
 			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Database.UpdatedAt"), Description: "Database updation date in ISO 8601 format."},

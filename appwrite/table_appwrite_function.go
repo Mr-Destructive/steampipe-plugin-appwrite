@@ -26,6 +26,7 @@ func tableAppwriteFunction(ctx context.Context) *plugin.Table {
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Id"), Description: "The unique ID for the function."},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Name"), Description: "The Name of the function."},
+			{Name: "title", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The Name or ID of the function."},
 			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.CreatedAt"), Description: "Function creation date in ISO 8601 format."},
 			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.UpdatedAt"), Description: "Function updation date in ISO 8601 format."},
 			{Name: "execute", Type: proto.ColumnType_STRING, Transform: transform.FromField("Function.Execute"), Description: "A list of string as permissions for the execution of the function."},

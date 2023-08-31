@@ -26,6 +26,7 @@ func tableAppwriteCollection(ctx context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			// Result columns
 			{Name: "id", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Id"), Description: "The unique ID of the collection."},
+			{Name: "title", Type: proto.ColumnType_STRING, Transform: transform.FromField("Id"), Description: "The Name or ID of the collection."},
 			{Name: "name", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.Name"), Description: "The Name of the collection."},
 			{Name: "created_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.CreatedAt"), Description: "Collection creation date in ISO 8601 format."},
 			{Name: "updated_at", Type: proto.ColumnType_STRING, Transform: transform.FromField("Collection.UpdatedAt"), Description: "Collection updation date in ISO 8601 format."},
