@@ -19,14 +19,23 @@ Get generations for a given text prompt in your Appwrite account:
 
 ```sql
 select
-  
+  name,
+  email
 from
-  
+  appwrite_account
 where
-  
+  status
+  and
+  email_verification
 ```
 
 ```
++------+---------------+
+| name | email         |
++------+---------------+
+| john | john@doe.com  |
+| test | test@test.com |
++------+---------------+
 ```
 
 ## Documentation
