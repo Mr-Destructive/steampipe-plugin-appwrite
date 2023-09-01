@@ -1,4 +1,4 @@
-# Table: appwrite_documents
+# Table: appwrite_document
 
 Get meta information related to documents for a collection in your Appwrite project.
 
@@ -8,9 +8,11 @@ Get meta information related to documents for a collection in your Appwrite proj
 
 ```sql
 select
-  *
+  id,
+  name,
+  fields
 from
-  appwrite_documents
+  appwrite_document
 where
   database_id = 'YOUR_DATABASE_ID'
   and

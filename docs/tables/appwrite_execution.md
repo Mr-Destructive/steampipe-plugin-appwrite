@@ -1,4 +1,4 @@
-# Table: appwrite_executions
+# Table: appwrite_execution
 
 Get meta information related to executions of a function in your Appwrite project.
 
@@ -8,9 +8,14 @@ Get meta information related to executions of a function in your Appwrite projec
 
 ```sql
 select
-  *
+  id,
+  status,
+  status_code,
+  response,
+  stdout,
+  stderr
 from
-  appwrite_executions
+  appwrite_execution
 where
   function_id = 'YOUR_FUNCTION_ID'
 ```

@@ -1,4 +1,4 @@
-# Table: appwrite_files
+# Table: appwrite_file
 
 Get meta information related to files in a bucket for your Appwrite project.
 
@@ -8,10 +8,15 @@ Get meta information related to files in a bucket for your Appwrite project.
 
 ```sql
 select
-  *
+  id,
+  name,
+  mime_type,
+  size_original
 from
-  appwrite_files
+  appwrite_file
 where
   bucket_id = 'YOUR_BUCKET_ID'
+  and
+  chunks_uploaded = chunks_total
 ```
 

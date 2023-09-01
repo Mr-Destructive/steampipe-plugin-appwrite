@@ -1,4 +1,4 @@
-# Table: appwrite_databases
+# Table: appwrite_database
 
 Get meta information related to databases for your Appwrite project.
 
@@ -8,9 +8,10 @@ Get meta information related to databases for your Appwrite project.
 
 ```sql
 select
-  *
+  id,
+  name
 from
-  appwrite_databases
+  appwrite_database
 where
   id = 'YOUR_DATABASE_ID'
   OR

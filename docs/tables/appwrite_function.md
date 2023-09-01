@@ -1,4 +1,4 @@
-# Table: appwrite_functions
+# Table: appwrite_function
 
 Get meta information related to functions in your Appwrite project.
 
@@ -8,9 +8,13 @@ Get meta information related to functions in your Appwrite project.
 
 ```sql
 select
-  *
+  id,
+  name,
+  runtime,
+  variable,
+  deployment
 from
-  appwrite_functions
+  appwrite_function
 where
   name = 'YOUR_FUNCTION_NAME'
 ```

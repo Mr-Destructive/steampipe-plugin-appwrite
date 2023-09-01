@@ -1,4 +1,4 @@
-# Table: appwrite_buckets
+# Table: appwrite_bucket
 
 Get meta information related to buckets for your Appwrite project.
 
@@ -8,10 +8,14 @@ Get meta information related to buckets for your Appwrite project.
 
 ```sql
 select
-  *
+  id,
+  name,
+  file_extension
 from
-  appwrite_buckets
+  appwrite_bucket
 where
   id = 'YOUR_BUCKET_ID'
+  or
+  name = 'YOUR_BUCKET_NAME';
 ```
 

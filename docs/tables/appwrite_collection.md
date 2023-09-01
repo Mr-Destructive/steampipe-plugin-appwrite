@@ -1,4 +1,4 @@
-# Table: appwrite_collections
+# Table: appwrite_collection
 
 Get meta information related to collections for your Appwrite project.
 
@@ -8,9 +8,11 @@ Get meta information related to collections for your Appwrite project.
 
 ```sql
 select
-  *
+  id,
+  name,
+  attributes
 from
-  appwrite_collections
+  appwrite_collection
 where
   database_id = 'YOUR_DATABASE_ID'
 ```

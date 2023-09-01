@@ -1,4 +1,4 @@
-# Table: appwrite_accounts
+# Table: appwrite_account
 
 Get information for accounts for your Appwrite project.
 
@@ -8,9 +8,11 @@ Get information for accounts for your Appwrite project.
 
 ```sql
 select
-  *
+  id,
+  email,
+  name
 from
-  appwrite_accounts
+  appwrite_account
 where
   status = true 
   and
