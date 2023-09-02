@@ -65,7 +65,7 @@ func listBuckets(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	if settingsString != "" {
 		// Overwrite any settings provided in the settings qual. If a field
 		// is not passed in the settings, then default to the settings above.
-		var crQual accountsRequestQual
+		var crQual bucketsRequestQual
 		err := json.Unmarshal([]byte(settingsString), &crQual)
 		if err != nil {
 			plugin.Logger(ctx).Error("appwrite_bucket.listBuckets", "unmarshal_error", err)
@@ -73,7 +73,6 @@ func listBuckets(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		}
 	}
 
-	// Query the sdk with appropriate methods and serialize the response
 	storage := appwrite.Storage{
 		Client: *conn,
 	}

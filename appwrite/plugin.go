@@ -19,7 +19,6 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			ShouldIgnoreError: isNotFoundError,
 		},
 		TableMap: map[string]*plugin.Table{
-			"appwrite_account":    tableAppwriteAccount(ctx),
 			"appwrite_bucket":     tableAppwriteBucket(ctx),
 			"appwrite_collection": tableAppwriteCollection(ctx),
 			"appwrite_database":   tableAppwriteDatabase(ctx),
@@ -28,7 +27,8 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"appwrite_execution":  tableAppwriteExecution(ctx),
 			"appwrite_file":       tableAppwriteFile(ctx),
 			"appwrite_function":   tableAppwriteFunction(ctx),
-			"appwrite_health":      tableAppwriteHealth(ctx),
+			"appwrite_health":     tableAppwriteHealth(ctx),
+			"appwrite_user":       tableAppwriteUser(ctx),
 		},
 	}
 	return p
