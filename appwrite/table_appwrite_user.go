@@ -18,7 +18,6 @@ func tableAppwriteUser(ctx context.Context) *plugin.Table {
 			Hydrate: listUsers,
 			KeyColumns: []*plugin.KeyColumn{
 				{Name: "search_query", Require: plugin.Optional},
-				{Name: "offset", Require: plugin.Optional},
 				{Name: "settings", Require: plugin.Optional},
 			},
 		},
@@ -43,9 +42,6 @@ func tableAppwriteUser(ctx context.Context) *plugin.Table {
 
 type usersRequestQual struct {
 	Search *string `json:"search_query"`
-	Offset *int    `json:"offset"`
-	Limit  *int
-	Order  *string
 }
 
 type usersRow struct {

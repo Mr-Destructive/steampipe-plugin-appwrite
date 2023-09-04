@@ -48,12 +48,17 @@ Run a query:
 
 ```sql
 select
-  *
+  id,
+  name,
+  fields
 from
-  account
+  appwrite_document
 where
-  name = ''
+  database_id = 'readlits-db'
+  and
+  collection_id = '64ce0aa746ea4ecb6e62';
 ```
+
 
 ## Developing
 
